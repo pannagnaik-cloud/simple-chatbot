@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced ChatBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --gray-color: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            height: 80vh;
+            max-height: 700px;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode .chat-container {
+            background: #2d3748;
+            color: white;
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bot-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bot-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .bot-info h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .status {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #86efac;
+            border-radius: 50%;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        body.dark-mode .chat-messages {
+            background: #2d3748;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--light-color);
+        }
+
+        body.dark-mode .chat-messages::-webkit-scrollbar-track {
+            background: #4a5568;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        body.dark-mode .chat-messages::-webkit-scrollbar-thumb {
+            background: #718096;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+        }
+
+        .message-content {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-xl);
+            margin-bottom: 0.5rem;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-bottom-right-radius: var(--radius-sm);
+        }
+
+        .bot-message .message-content {
+            background: var(--light-color);
+            color: var(--dark-color);
+            border-bottom-left-radius: var(--radius-sm);
+        }
+
+        body.dark-mode .bot-message .message-content {
+            background: #4a5568;
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+            align-self: flex-end;
+        }
+
+        .user-message .message-time {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .message-reactions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .reaction-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+
+        .reaction-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .chat-input-container {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: white;
+        }
+
+        body.dark-mode .chat-input-container {
+            background: #2d3748;
+            border-top-color: #4a5568;
+        }
+
+        #chatForm {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 0.875rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        body.dark-mode #messageInput {
+            background: #4a5568;
+            border-color: #718096;
+            color: white;
+        }
+
+        #messageInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        body.dark-mode #messageInput:focus {
+            background: #2d3748;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            background: var(--light-color);
+            color: var(--dark-color);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .action-btn {
+            background: #4a5568;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 1rem;
+            background: var(--light-color);
+            border-radius: var(--radius-xl);
+            width: fit-content;
+        }
+
+        body.dark-mode .typing-indicator {
+            background: #4a5568;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--gray-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        body.dark-mode .typing-indicator span {
+            background: #cbd5e0;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        .about-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .about-content {
+            background: white;
+            border-radius: var(--radius-xl);
+            max-width: 500px;
+            width: 100%;
+            padding: 2rem;
+            position: relative;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        body.dark-mode .about-content {
+            background: #2d3748;
+            color: white;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+
+        body.dark-mode .close-btn {
+            color: #cbd5e0;
+        }
+
+        .about-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        .about-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .about-info p {
+            color: var(--gray-color);
+        }
+
+        body.dark-mode .about-info p {
+            color: #cbd5e0;
+        }
+
+        .about-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .about-section h4 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .about-section p {
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #f1f5f9;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        body.dark-mode .code-block {
+            background: #1a202c;
+        }
+
+        .link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        body.dark-mode .link {
+            color: #818cf8;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+
+        .feature-list li {
+            padding: 0.25rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .chat-container {
+                height: 90vh;
+                max-height: none;
+                border-radius: var(--radius-lg);
+            }
+            
+            .chat-header {
+                padding: 1rem;
+            }
+            
+            .bot-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+            
+            .bot-info h2 {
+                font-size: 1.125rem;
+            }
+            
+            .chat-messages {
+                padding: 1rem;
+            }
+            
+            .message-content {
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
+            }
+            
+            .chat-input-container {
+                padding: 1rem;
+            }
+            
+            #messageInput {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+            }
+            
+            .action-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h2>Advanced ChatBot</h2>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" id="darkModeToggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="header-btn" id="aboutBtn" title="About">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+                <button class="header-btn" id="clearChat" title="Clear Chat">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    <p>Hello! I'm an advanced AI chatbot developed by Pannag. I can help with conversations, answer questions, do calculations, and much more. What would you like to talk about today?</p>
+                </div>
+                <span class="message-time">Just now</span>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <form id="chatForm">
+                <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off">
+                <div class="input-actions">
+                    <button type="button" class="action-btn" id="voiceBtn" title="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="submit" class="action-btn send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="about-modal" id="aboutModal">
+        <div class="about-content">
+            <button class="close-btn" id="closeAbout">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="about-header">
+                <div class="about-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="about-info">
+                    <h3>Advanced ChatBot</h3>
+                    <p>Version 2.0</p>
+                </div>
+            </div>
+            <div class="about-section">
+                <h4>Developer</h4>
+                <p>This chatbot was developed by Pannag, a talented developer with expertise in AI and web technologies. Pannag created this chatbot to demonstrate advanced conversational AI capabilities and provide a helpful, interactive experience.</p>
+            </div>
+            <div class="about-section">
+                <h4>Features</h4>
+                <ul class="feature-list">
+                    <li>Natural language conversations</li>
+                    <li>Contextual awareness</li>
+                    <li>Mathematical calculations</li>
+                    <li>Unit conversions</li>
+                    <li>Word definitions</li>
+                    <li>Dark mode support</li>
+                    <li>Voice input capability</li>
+                    <li>Text-to-speech responses</li>
+                </ul>
+            </div>
+            <div class="about-section">
+                <h4>Learn More</h4>
+                <p>Connect with Pannag to learn more about this project and other exciting developments in AI and web technologies.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.getElementById('chatForm');
+            const messageInput = document.getElementById('messageInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const clearBtn = document.getElementById('clearChat');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const aboutBtn = document.getElementById('aboutBtn');
+            const aboutModal = document.getElementById('aboutModal');
+            const closeAbout = document.getElementById('closeAbout');
+            const voiceBtn = document.getElementById('voiceBtn');
+            
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // Conversation context
+            let conversationContext = {
+                userName: null,
+                lastTopic: null,
+                messageHistory: []
+            };
+            
+            // Enhanced response patterns
+            const responses = {
+                greetings: [
+                    "Hello! How are you today?",
+                    "Hi there! Nice to meet you!",
+                    "Hey! What's on your mind?",
+                    "Greetings! How can I help you?",
+                    "Hello! It's great to chat with you!"
+                ],
+                howAreYou: [
+                    "I'm doing great, thanks for asking! I'm an AI chatbot developed by Pannag, so I don't have feelings, but I'm here to help!",
+                    "I'm functioning perfectly! How about you?",
+                    "I'm doing well! I hope you're having a great day too!",
+                    "I'm excellent! Ready to assist you with anything you need."
+                ],
+                developer: [
+                    "I was developed by Pannag, a talented developer with expertise in AI and web technologies. Pannag created me to demonstrate advanced conversational AI capabilities.",
+                    "My developer is Pannag, who has expertise in creating advanced AI systems and interactive web applications.",
+                    "I'm a product of Pannag's development skills. They're passionate about creating intelligent and user-friendly AI experiences.",
+                    "The developer Pannag built me using modern web technologies and AI techniques to provide helpful conversations."
+                ],
+                name: [
+                    "I'm Advanced ChatBot! I was developed by Pannag, and I'm here to chat with you and help answer your questions.",
+                    "You can call me ChatBot! I'm an AI assistant developed by Pannag.",
+                    "I don't have a specific name, but you can call me whatever you like! I was developed by Pannag.",
+                    "I'm just a chatbot, but I'm happy to be your friend! I was developed by Pannag."
+                ],
+                help: [
+                    "I can help with conversations, answer questions, do math calculations, convert units, define words, tell jokes, and more! Just ask me anything you'd like to know.",
+                    "I'm here to assist you with various tasks! You can ask me about math, definitions, time, weather, or just have a friendly conversation.",
+                    "I can help with many topics including calculations, conversions, information lookup, and general conversation. What would you like to know?",
+                    "I'm your AI assistant! I can answer questions, perform calculations, help with definitions, and engage in conversations on various topics."
+                ],
+                weather: [
+                    "I don't have access to real-time weather data, but you can check your local weather app or look outside for current conditions!",
+                    "For current weather information, please check a weather service like Weather.com or your phone's weather app.",
+                    "I can't check the weather right now, but I hope it's pleasant where you are! Is there something else I can help with?"
+                ],
+                time: [
+                    `The current time is ${new Date().toLocaleTimeString()}.`,
+                    `It's ${new Date().toLocaleTimeString()} right now.`,
+                    `Time check: ${new Date().toLocaleTimeString()}`
+                ],
+                date: [
+                    `Today is ${new Date().toLocaleDateString()}.`,
+                    `The date is ${new Date().toLocaleDateString()}.`,
+                    `It's ${new Date().toLocaleDateString()} today.`
+                ],
+                jokes: [
+                    "Why don't scientists trust atoms? Because they make up everything!",
+                    "What do you call a fake noodle? An impasta!",
+                    "Why did the scarecrow win an award? He was outstanding in his field!",
+                    "What do you call a bear with no teeth? A gummy bear!",
+                    "Why don't eggs tell jokes? They'd crack each other up!",
+                    "Why couldn't the bicycle stand up by itself? It was two tired!",
+                    "What do you call a fish wearing a bowtie? Sofishticated!",
+                    "Why did the math book look so sad? Because it had too many problems!"
+                ],
+                default: [
+                    "That's interesting! Tell me more.",
+                    "I'm not sure how to respond to that. Could you try rephrasing?",
+                    "Hmm, I'm still learning. Could you ask me something else?",
+                    "I don't understand. Can you try a different question?",
+                    "That's a good question! Let me think about that...",
+                    "I'm not sure I can help with that, but I'm here to chat!",
+                    "Interesting! What else would you like to know?",
+                    "I'm not familiar with that topic. Could you provide more context?"
+                ]
+            };
+            
+            // Add message to chat
+            function addMessage(message, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+                
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                
+                // Process message for code blocks, links, etc.
+                const processedMessage = processMessageContent(message);
+                messageContent.innerHTML = processedMessage;
+                
+                const messageTime = document.createElement('span');
+                messageTime.className = 'message-time';
+                messageTime.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                messageDiv.appendChild(messageContent);
+                messageDiv.appendChild(messageTime);
+                
+                // Add reaction buttons for bot messages
+                if (!isUser) {
+                    const reactionsDiv = document.createElement('div');
+                    reactionsDiv.className = 'message-reactions';
+                    
+                    const likeBtn = document.createElement('button');
+                    likeBtn.className = 'reaction-btn';
+                    likeBtn.innerHTML = '<i class="far fa-thumbs-up"></i>';
+                    likeBtn.addEventListener('click', function() {
+                        this.innerHTML = '<i class="fas fa-thumbs-up"></i>';
+                        this.style.color = 'var(--primary-color)';
+                    });
+                    
+                    reactionsDiv.appendChild(likeBtn);
+                    messageDiv.appendChild(reactionsDiv);
+                }
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Add to message history
+                conversationContext.messageHistory.push({
+                    content: message,
+                    isUser: isUser,
+                    timestamp: new Date()
+                });
+                
+                // Keep only the last 10 messages in history
+                if (conversationContext.messageHistory.length > 10) {
+                    conversationContext.messageHistory.shift();
+                }
+            }
+            
+            // Process message content for special formatting
+            function processMessageContent(message) {
+                // Simple code block detection
+                let processedMessage = message.replace(/```([\s\S]*?)```/g, '<pre class="code-block"><code>$1</code></pre>');
+                
+                // Simple link detection
+                processedMessage = processedMessage.replace(
+                    /(https?:\/\/[^\s]+)/g, 
+                    '<a href="$1" target="_blank" class="link">$1</a>'
+                );
+                
+                // Convert newlines to <br>
+                processedMessage = processedMessage.replace(/\n/g, '<br>');
+                
+                return `<p>${processedMessage}</p>`;
+            }
+            
+            // Show typing indicator
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message bot-message typing-message';
+                typingDiv.innerHTML = `
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                `;
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return typingDiv;
+            }
+            
+            // Get bot response with enhanced logic
+            function getBotResponse(userMessage) {
+                const message = userMessage.toLowerCase();
+                
+                // Check for developer questions
+                if (message.includes('developer') || message.includes('who made you') || 
+                    message.includes('who created you') || message.includes('who built you') ||
+                    message.includes('pannag')) {
+                    return getRandomResponse(responses.developer);
+                }
+                
+                // Check for greetings
+                if (message.includes('hello') || message.includes('hi') || message.includes('hey') || 
+                    message.includes('greetings') || message.includes('good morning') || 
+                    message.includes('good afternoon') || message.includes('good evening')) {
+                    return getRandomResponse(responses.greetings);
+                }
+                
+                // Check for "how are you" questions
+                if (message.includes('how are you') || message.includes('how are you doing') || 
+                    message.includes('how do you do')) {
+                    return getRandomResponse(responses.howAreYou);
+                }
+                
+                // Check for name questions
+                if (message.includes('your name') || message.includes('who are you') || 
+                    message.includes('what are you') || message.includes('what should i call you')) {
+                    return getRandomResponse(responses.name);
+                }
+                
+                // Check for help requests
+                if (message.includes('help') || message.includes('what can you do') || 
+                    message.includes('assist') || message.includes('capabilities')) {
+                    return getRandomResponse(responses.help);
+                }
+                
+                // Check for weather questions
+                if (message.includes('weather') || message.includes('rain') || 
+                    message.includes('sunny') || message.includes('temperature') || 
+                    message.includes('forecast')) {
+                    return getRandomResponse(responses.weather);
+                }
+                
+                // Check for time questions
+                if (message.includes('time') || message.includes('clock') || 
+                    message.includes('what time')) {
+                    return getRandomResponse(responses.time);
+                }
+                
+                // Check for date questions
+                if (message.includes('date') || message.includes('day') || 
+                    message.includes('today') || message.includes('what day') || 
+                    message.includes('what is today')) {
+                    return getRandomResponse(responses.date);
+                }
+                
+                // Check for joke requests
+                if (message.includes('joke') || message.includes('funny') || 
+                    message.includes('make me laugh') || message.includes('tell me a joke')) {
+                    return getRandomResponse(responses.jokes);
+                }
+                
+                // Check for math calculations
+                if (message.match(/(\d+)\s*([\+\-\*\/])\s*(\d+)/)) {
+                    return calculateMath(message);
+                }
+                
+                // Check for unit conversions
+                if (message.includes('convert') || message.includes('conversion')) {
+                    return handleUnitConversion(message);
+                }
+                
+                // Check for definition requests
+                if (message.includes('define') || message.includes('definition of') || 
+                    message.includes('what does') && message.includes('mean')) {
+                    return handleDefinitionRequest(message);
+                }
+                
+                // Check for thanks
+                if (message.includes('thank') || message.includes('thanks')) {
+                    return "You're welcome! Is there anything else I can help you with?";
+                }
+                
+                // Check for goodbye
+                if (message.includes('bye') || message.includes('goodbye') || 
+                    message.includes('see you') || message.includes('later') || 
+                    message.includes('have a nice day')) {
+                    return "Goodbye! It was nice chatting with you. Come back anytime!";
+                }
+                
+                // Check for user name introduction
+                if (message.includes('my name is') || message.includes('i am') || message.includes("i'm")) {
+                    const nameMatch = message.match(/(?:my name is|i am|i'm)\s+([a-zA-Z]+)/i);
+                    if (nameMatch) {
+                        conversationContext.userName = nameMatch[1];
+                        return `Nice to meet you, ${conversationContext.userName}! How can I help you today?`;
+                    }
+                }
+                
+                // Check if user is asking about the bot's name
+                if (conversationContext.userName && message.includes(conversationContext.userName.toLowerCase())) {
+                    return `Yes, ${conversationContext.userName}? How can I assist you?`;
+                }
+                
+                // Default response
+                return getRandomResponse(responses.default);
+            }
+            
+            // Calculate math expressions
+            function calculateMath(message) {
+                const match = message.match(/(\d+)\s*([\+\-\*\/])\s*(\d+)/);
+                if (match) {
+                    const num1 = parseFloat(match[1]);
+                    const operator = match[2];
+                    const num2 = parseFloat(match[3]);
+                    let result;
+                    
+                    switch (operator) {
+                        case '+':
+                            result = num1 + num2;
+                            break;
+                        case '-':
+                            result = num1 - num2;
+                            break;
+                        case '*':
+                            result = num1 * num2;
+                            break;
+                        case '/':
+                            result = num2 !== 0 ? num1 / num2 : "undefined (division by zero)";
+                            break;
+                        default:
+                            return "I couldn't calculate that expression.";
+                    }
+                    
+                    return `The result of ${num1} ${operator} ${num2} is ${result}.`;
+                }
+                
+                return "I couldn't find a valid math expression to calculate.";
+            }
+            
+            // Handle unit conversions
+            function handleUnitConversion(message) {
+                // Simple conversion examples
+                if (message.includes('celsius') && message.includes('fahrenheit')) {
+                    return "To convert Celsius to Fahrenheit: multiply by 9/5 and add 32. To convert Fahrenheit to Celsius: subtract 32 and multiply by 5/9.";
+                }
+                
+                if (message.includes('kilometers') && message.includes('miles')) {
+                    return "To convert kilometers to miles: multiply by 0.621371. To convert miles to kilometers: multiply by 1.60934.";
+                }
+                
+                if (message.includes('kilograms') && message.includes('pounds')) {
+                    return "To convert kilograms to pounds: multiply by 2.20462. To convert pounds to kilograms: multiply by 0.453592.";
+                }
+                
+                if (message.includes('meters') && message.includes('feet')) {
+                    return "To convert meters to feet: multiply by 3.28084. To convert feet to meters: multiply by 0.3048.";
+                }
+                
+                return "I can help with various unit conversions like temperature (Celsius/Fahrenheit), distance (km/miles), weight (kg/pounds), and length (meters/feet). Please specify which conversion you need.";
+            }
+            
+            // Handle definition requests
+            function handleDefinitionRequest(message) {
+                // Extract the word to define
+                let wordMatch = message.match(/(?:define|definition of|what does)\s+([a-zA-Z]+)/i);
+                if (!wordMatch) {
+                    wordMatch = message.match(/what\s+([a-zA-Z]+)\s+mean/i);
+                }
+                
+                if (wordMatch) {
+                    const word = wordMatch[1].toLowerCase();
+                    
+                    // Simple dictionary
+                    const definitions = {
+                        "ai": "Artificial Intelligence is the simulation of human intelligence in machines that are programmed to think like humans and mimic their actions.",
+                        "bot": "A bot is a software application that runs automated tasks (scripts) over the Internet, typically performing tasks that are simple and repetitive.",
+                        "chatbot": "A chatbot is a software application used to conduct an on-line chat conversation via text or text-to-speech, in lieu of providing direct contact with a live human agent.",
+                        "algorithm": "An algorithm is a process or set of rules to be followed in calculations or other problem-solving operations, especially by a computer.",
+                        "programming": "Programming is the process of creating a set of instructions that tell a computer how to perform a task."
+                    };
+                    
+                    if (definitions[word]) {
+                        return `**${word.charAt(0).toUpperCase() + word.slice(1)}**: ${definitions[word]}`;
+                    } else {
+                        return `I don't have a definition for "${word}" in my knowledge base. You might want to check a dictionary for that word.`;
+                    }
+                }
+                
+                return "I can help define technical terms related to programming, AI, and web development. What word would you like me to define?";
+            }
+            
+            // Get random response from array
+            function getRandomResponse(responseArray) {
+                return responseArray[Math.floor(Math.random() * responseArray.length)];
+            }
+            
+            // Handle form submission
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const message = messageInput.value.trim();
+                if (message === '') return;
+                
+                // Add user message
+                addMessage(message, true);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Show typing indicator
+                const typingIndicator = showTypingIndicator();
+                
+                // Get and add bot response after a delay
+                setTimeout(() => {
+                    typingIndicator.remove();
+                    const botResponse = getBotResponse(message);
+                    addMessage(botResponse, false);
+                    
+                    // Update conversation context
+                    conversationContext.lastTopic = message;
+                }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+            });
+            
+            // Clear chat
+            clearBtn.addEventListener('click', function() {
+                chatMessages.innerHTML = `
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            <p>Hello! I'm an advanced AI chatbot developed by Pannag. I can help with conversations, answer questions, do calculations, and much more. What would you like to talk about today?</p>
+                        </div>
+                        <span class="message-time">Just now</span>
+                    </div>
+                `;
+                
+                // Reset conversation context
+                conversationContext = {
+                    userName: null,
+                    lastTopic: null,
+                    messageHistory: []
+                };
+            });
+            
+            // Toggle dark mode
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                
+                if (isDarkMode) {
+                    this.innerHTML = '<i class="fas fa-sun"></i>';
+                    localStorage.setItem('darkMode', 'true');
+                } else {
+                    this.innerHTML = '<i class="fas fa-moon"></i>';
+                    localStorage.setItem('darkMode', 'false');
+                }
+            });
+            
+            // Show about modal
+            aboutBtn.addEventListener('click', function() {
+                aboutModal.style.display = 'flex';
+            });
+            
+            // Close about modal
+            closeAbout.addEventListener('click', function() {
+                aboutModal.style.display = 'none';
+            });
+            
+            // Close about modal when clicking outside
+            aboutModal.addEventListener('click', function(e) {
+                if (e.target === aboutModal) {
+                    aboutModal.style.display = 'none';
+                }
+            });
+            
+            // Voice input (basic implementation)
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    messageInput.value = transcript;
+                    chatForm.dispatchEvent(new Event('submit'));
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error', event.error);
+                };
+                
+                voiceBtn.addEventListener('click', function() {
+                    recognition.start();
+                    this.innerHTML = '<i class="fas fa-stop"></i>';
+                    this.style.color = 'var(--danger-color)';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-microphone"></i>';
+                        this.style.color = '';
+                    }, 5000);
+                });
+            } else {
+                voiceBtn.style.display = 'none';
+            }
+            
+            // Focus input on load
+            messageInput.focus();
+            
+            // Allow sending message with Enter key
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
