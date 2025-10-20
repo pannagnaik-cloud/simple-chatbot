@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple ChatBot</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Advanced ChatBot</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="chat-container">
@@ -15,19 +16,27 @@
                     <i class="fas fa-robot"></i>
                 </div>
                 <div>
-                    <h2>ChatBot</h2>
+                    <h2>Advanced ChatBot</h2>
                     <span class="status">Online</span>
                 </div>
             </div>
-            <button class="clear-btn" id="clearChat">
-                <i class="fas fa-trash"></i>
-            </button>
+            <div class="header-actions">
+                <button class="header-btn" id="darkModeToggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="header-btn" id="aboutBtn" title="About">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+                <button class="header-btn" id="clearChat" title="Clear Chat">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
         </div>
         
         <div class="chat-messages" id="chatMessages">
             <div class="message bot-message">
                 <div class="message-content">
-                    <p>Hello! I'm your AI assistant. How can I help you today?</p>
+                    <p>Hello! I'm an advanced AI chatbot developed by Pannag. I can help with conversations, answer questions, do calculations, and much more. What would you like to talk about today?</p>
                 </div>
                 <span class="message-time">Just now</span>
             </div>
@@ -36,13 +45,260 @@
         <div class="chat-input-container">
             <form id="chatForm">
                 <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off">
-                <button type="submit" class="send-btn">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <div class="input-actions">
+                    <button type="button" class="action-btn" id="voiceBtn" title="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="submit" class="action-btn send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
+    <div class="about-modal" id="aboutModal">
+        <div class="about-content">
+            <button class="close-btn" id="closeAbout">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="about-header">
+                <div class="about-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="about-info">
+                    <h3>Advanced ChatBot</h3>
+                    <p>Version 2.0</p>
+                </div>
+            </div>
+            <div class="about-section">
+                <h4>Developer</h4>
+                <p>This chatbot was developed by Pannag, a talented developer with expertise in AI and web technologies. Pannag created this chatbot to demonstrate advanced conversational AI capabilities and provide a helpful, interactive experience.</p>
+            </div>
+            <div class="about-section">
+                <h4>Features</h4>
+                <ul class="feature-list">
+                    <li>Natural language conversations</li>
+                    <li>Contextual awareness</li>
+                    <li>Mathematical calculations</li>
+                    <li>Unit conversions</li>
+                    <li>Word definitions</li>
+                    <li>Dark mode support</li>
+                    <li>Voice input capability</li>
+                    <li>Text-to-speech responses</li>
+                </ul>
+            </div>
+            <div class="about-section">
+                <h4>Learn More</h4>
+                <p>Connect with Pannag to learn more about this project and other exciting developments in AI and web technologies.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced ChatBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h2>Advanced ChatBot</h2>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" id="darkModeToggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="header-btn" id="aboutBtn" title="About">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+                <button class="header-btn" id="clearChat" title="Clear Chat">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    <p>Hello! I'm an advanced AI chatbot developed by Pannag. I can help with conversations, answer questions, do calculations, and much more. What would you like to talk about today?</p>
+                </div>
+                <span class="message-time">Just now</span>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <form id="chatForm">
+                <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off">
+                <div class="input-actions">
+                    <button type="button" class="action-btn" id="voiceBtn" title="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="submit" class="action-btn send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="about-modal" id="aboutModal">
+        <div class="about-content">
+            <button class="close-btn" id="closeAbout">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="about-header">
+                <div class="about-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="about-info">
+                    <h3>Advanced ChatBot</h3>
+                    <p>Version 2.0</p>
+                </div>
+            </div>
+            <div class="about-section">
+                <h4>Developer</h4>
+                <p>This chatbot was developed by Pannag, a talented developer with expertise in AI and web technologies. Pannag created this chatbot to demonstrate advanced conversational AI capabilities and provide a helpful, interactive experience.</p>
+            </div>
+            <div class="about-section">
+                <h4>Features</h4>
+                <ul class="feature-list">
+                    <li>Natural language conversations</li>
+                    <li>Contextual awareness</li>
+                    <li>Mathematical calculations</li>
+                    <li>Unit conversions</li>
+                    <li>Word definitions</li>
+                    <li>Dark mode support</li>
+                    <li>Voice input capability</li>
+                    <li>Text-to-speech responses</li>
+                </ul>
+            </div>
+            <div class="about-section">
+                <h4>Learn More</h4>
+                <p>Connect with Pannag to learn more about this project and other exciting developments in AI and web technologies.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced ChatBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h2>Advanced ChatBot</h2>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" id="darkModeToggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="header-btn" id="aboutBtn" title="About">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+                <button class="header-btn" id="clearChat" title="Clear Chat">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    <p>Hello! I'm an advanced AI chatbot developed by Pannag. I can help with conversations, answer questions, do calculations, and much more. What would you like to talk about today?</p>
+                </div>
+                <span class="message-time">Just now</span>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <form id="chatForm">
+                <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off">
+                <div class="input-actions">
+                    <button type="button" class="action-btn" id="voiceBtn" title="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="submit" class="action-btn send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="about-modal" id="aboutModal">
+        <div class="about-content">
+            <button class="close-btn" id="closeAbout">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="about-header">
+                <div class="about-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="about-info">
+                    <h3>Advanced ChatBot</h3>
+                    <p>Version 2.0</p>
+                </div>
+            </div>
+            <div class="about-section">
+                <h4>Developer</h4>
+                <p>This chatbot was developed by Pannag, a talented developer with expertise in AI and web technologies. Pannag created this chatbot to demonstrate advanced conversational AI capabilities and provide a helpful, interactive experience.</p>
+            </div>
+            <div class="about-section">
+                <h4>Features</h4>
+                <ul class="feature-list">
+                    <li>Natural language conversations</li>
+                    <li>Contextual awareness</li>
+                    <li>Mathematical calculations</li>
+                    <li>Unit conversions</li>
+                    <li>Word definitions</li>
+                    <li>Dark mode support</li>
+                    <li>Voice input capability</li>
+                    <li>Text-to-speech responses</li>
+                </ul>
+            </div>
+            <div class="about-section">
+                <h4>Learn More</h4>
+                <p>Connect with Pannag to learn more about this project and other exciting developments in AI and web technologies.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
